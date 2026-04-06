@@ -1,0 +1,7 @@
+# flask-app/Chart.yaml
+apiVersion: v2
+name: flask-app
+description: Flask app con seguridad en Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

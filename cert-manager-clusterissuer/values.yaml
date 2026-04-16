@@ -1,0 +1,7 @@
+namespace: cert-manager
+
+cert-manager:
+  installCRDs: true
+
+clusterIssuer:
+  email: ricardlloppalou@gmail.com

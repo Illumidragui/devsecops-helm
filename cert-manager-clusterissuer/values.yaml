@@ -4,4 +4,4 @@ cert-manager:
   installCRDs: true
 
 clusterIssuer:
-  email: ricardlloppalou@gmail.com
+  email: shengjun.ye@proton.me

@@ -4,7 +4,7 @@ image:
   repository: docker.io/syedev/syesite
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "ga-2026.02.25-2112"
+  tag: "ga-2026.04.21-1651"
 serviceAccount:
   create: false
   name: ""

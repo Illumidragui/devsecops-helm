@@ -1,7 +1,7 @@
 replicaCount: 1
 namespace: "syepsite"
 image:
-  repository: docker.io/syedev/syesite
+  repository: docker.io/illumidragui/syesite
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "ga-2026.04.22-1439"
@@ -47,6 +47,9 @@ ingress:
       hosts:
         - shengjunye.me
         - www.shengjunye.me
+httpRoute:
+  enabled: false
+
 resources: {}
 livenessProbe:
   httpGet:

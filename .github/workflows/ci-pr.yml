@@ -1,10 +1,11 @@
-name: CI Fast — dev push
+name: CI PR — Quality Gate
 
-# Secret scan + Helm lint on every push to dev.
+# Gitleaks + helm lint on every PR to main.
 
 on:
-  push:
-    branches: [dev]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
@@ -19,7 +20,7 @@ jobs:
       run-snyk: false
     secrets: inherit
 
-  helm-lint:
+  helm-validate:
     needs: gitleaks
     uses: Illumidragui/.github/.github/workflows/_reusable.ci-lint-helm.yml@main
     with:

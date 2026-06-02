@@ -1,0 +1,36 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: hello.shengjunye.me
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head><meta charset="UTF-8"><title>Hello</title>
+  <style>
+    body { font-family: sans-serif; display: flex; align-items: center;
+           justify-content: center; height: 100vh; margin: 0; background: #0f172a; color: #f8fafc; }
+    h1   { font-size: 2rem; }
+    p    { color: #94a3b8; }
+  </style>
+  </head>
+  <body>
+    <div style="text-align:center">
+      <h1>&#x2705; Hello, the workflow was a success</h1>
+      <p>Served by ArgoCD &rarr; Helm &rarr; k3s &rarr; ingress-nginx</p>
+    </div>
+  </body>
+  </html>

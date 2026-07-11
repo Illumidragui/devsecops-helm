@@ -47,8 +47,6 @@ ingress:
       hosts:
         - shengjunye.me
         - www.shengjunye.me
-httpRoute:
-  enabled: false
 
 resources: {}
 livenessProbe:

@@ -1,0 +1,425 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.27-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: kuberflow.shengjunye.me
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+html: |
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>kuberflow — workflow created</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+    /* ── Operator theme, ported from website/src/styles/custom.css ── */
+    :root {
+      --op-bg:        #0a0c0f;
+      --op-bg-card:   #0d1117;
+      --op-bg-hover:  #111820;
+      --op-text:      #e2e8f0;
+      --op-muted:     #64748b;
+      --op-border:    #1a2a1a;
+      --op-accent:    #4ade80;
+      --op-accent-rgb: 74, 222, 128;
+      --dot-grid: rgba(74, 222, 128, 0.07);
+
+      /* diagram-only signal colors — ANSI-terminal inspired, rest of the page stays
+         on the single green accent per the site's own convention */
+      --node-dns:       #38bdf8;
+      --node-aws:       #fbbf24;
+      --node-compute:   #fb923c;
+      --node-tailscale: #c084fc;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --op-bg:        #f0f4f0;
+        --op-bg-card:   #e8ede8;
+        --op-bg-hover:  #dde4dd;
+        --op-border:    #b8ccb8;
+        --op-text:      #1a2a1a;
+        --op-muted:     #4a6a4a;
+        --op-accent:    #1a7a3a;
+        --op-accent-rgb: 26, 122, 58;
+        --dot-grid: rgba(26, 122, 58, 0.08);
+        --node-dns:       #0369a1;
+        --node-aws:       #92610a;
+        --node-compute:   #9a4a12;
+        --node-tailscale: #7e22ce;
+      }
+    }
+    :root[data-theme="dark"] {
+      --op-bg:        #0a0c0f;
+      --op-bg-card:   #0d1117;
+      --op-bg-hover:  #111820;
+      --op-text:      #e2e8f0;
+      --op-muted:     #64748b;
+      --op-border:    #1a2a1a;
+      --op-accent:    #4ade80;
+      --op-accent-rgb: 74, 222, 128;
+      --dot-grid: rgba(74, 222, 128, 0.07);
+      --node-dns:       #38bdf8;
+      --node-aws:       #fbbf24;
+      --node-compute:   #fb923c;
+      --node-tailscale: #c084fc;
+    }
+    :root[data-theme="light"] {
+      --op-bg:        #f0f4f0;
+      --op-bg-card:   #e8ede8;
+      --op-bg-hover:  #dde4dd;
+      --op-border:    #b8ccb8;
+      --op-text:      #1a2a1a;
+      --op-muted:     #4a6a4a;
+      --op-accent:    #1a7a3a;
+      --op-accent-rgb: 26, 122, 58;
+      --dot-grid: rgba(26, 122, 58, 0.08);
+      --node-dns:       #0369a1;
+      --node-aws:       #92610a;
+      --node-compute:   #9a4a12;
+      --node-tailscale: #7e22ce;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--op-bg);
+      color: var(--op-text);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    body {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      padding: clamp(24px, 5vw, 64px) 20px 40px;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, var(--dot-grid) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    main { position: relative; width: 100%; max-width: 780px; }
+    .mono { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+
+    /* ── terminal card (ported from Hero.module.css .terminalCard) ── */
+    .terminalCard {
+      background: var(--op-bg-card);
+      border: 1px solid var(--op-border);
+      border-radius: 8px;
+      overflow: hidden;
+      animation: fadeSlideUp 0.6s ease both;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .terminalBar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--op-border);
+    }
+    .winDot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .winDot:nth-child(1) { background: #ff5f57; }
+    .winDot:nth-child(2) { background: #febc2e; }
+    .winDot:nth-child(3) { background: #28c840; }
+    .terminalTitle {
+      font-size: 0.7rem;
+      color: var(--op-muted);
+      flex: 1;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+    .liveTag {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--op-accent);
+    }
+    .livePulse {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--op-accent);
+      animation: liveGlow 1.8s ease-in-out infinite;
+    }
+    @keyframes liveGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(var(--op-accent-rgb), 0.8); }
+      60%       { box-shadow: 0 0 0 5px rgba(var(--op-accent-rgb), 0); }
+    }
+
+    .terminalBody { padding: 28px 30px 30px; }
+
+    .cmdLine {
+      display: flex; align-items: baseline; gap: 8px;
+      margin-bottom: 22px; font-size: 0.78rem;
+    }
+    .cmdPrompt { color: var(--op-accent); opacity: 0.85; flex-shrink: 0; }
+    .cmd { color: var(--op-text); opacity: 0.8; }
+    .cursor {
+      display: inline-block; width: 7px; height: 14px;
+      background: var(--op-accent); margin-left: 2px;
+      animation: blink 1s step-end infinite; vertical-align: middle;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .eyebrow {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      color: var(--op-accent); text-transform: uppercase;
+      margin-bottom: 1.1rem;
+    }
+    .eyebrowLine { display: inline-block; width: 20px; height: 1px; background: var(--op-accent); flex-shrink: 0; }
+
+    h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.7rem, 4vw, 2.15rem);
+      font-weight: 400;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: var(--op-text);
+      margin: 0 0 1.1rem;
+      text-wrap: balance;
+    }
+    h1 em { color: var(--op-accent); font-style: italic; }
+
+    .lede {
+      font-size: 0.95rem; line-height: 1.75; color: var(--op-muted);
+      max-width: 56ch; margin: 0 0 1.9rem;
+    }
+    .lede code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85em;
+      color: var(--op-text); background: var(--op-bg-hover);
+      border: 1px solid var(--op-border); border-radius: 4px; padding: 0.1em 0.4em;
+    }
+
+    /* ── pipeline stages (ported from Hero.module.css .pipeline) ── */
+    .pipeline {
+      display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
+    .stage {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em;
+      color: var(--op-accent); text-transform: uppercase;
+    }
+    .pipeArrow { color: var(--op-muted); opacity: 0.4; font-size: 0.62rem; }
+
+    .sectionLabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--op-muted); display: flex; align-items: center; gap: 8px;
+      margin: 30px 0 14px;
+    }
+    .sectionLabel .eyebrowLine { background: var(--op-border); }
+
+    /* ── architecture diagram ── */
+    .diagram {
+      border: 1px solid var(--op-border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.012);
+      padding: 6px;
+      overflow-x: auto;
+    }
+    .diagram svg { display: block; width: 100%; height: auto; min-width: 560px; }
+
+    .nodeBox { fill: var(--op-bg-hover); stroke: var(--op-border); stroke-width: 1.3; }
+    .nodeBox.dns       { stroke: var(--node-dns); }
+    .nodeBox.aws       { stroke: var(--node-aws); }
+    .nodeBox.compute   { stroke: var(--node-compute); }
+    .nodeBox.tailscale { stroke: var(--node-tailscale); }
+    .nodeBox.argocd    { stroke: var(--op-accent); }
+
+    .nodeNum {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      opacity: 0.95;
+    }
+    .nodeTitle { font-family: 'Inter', sans-serif; font-weight: 500; fill: var(--op-text); }
+    .nodeCaption { font-family: 'JetBrains Mono', monospace; fill: var(--op-muted); }
+
+    .flowLine { fill: none; stroke-width: 1.4; opacity: 0.75; }
+    .flowLine.branch { stroke-dasharray: 3 4; opacity: 0.6; }
+
+    .laneTag {
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.1em;
+      fill: var(--op-muted);
+    }
+
+    /* ── tech pills (ported from Hero.module.css .techPill) ── */
+    .techRow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+    .techPill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.04em; color: var(--op-muted);
+      border: 1px solid var(--op-border); border-radius: 4px;
+      padding: 4px 9px; background: rgba(var(--op-accent-rgb), 0.03);
+    }
+    .techPill .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .techPill.self {
+      color: var(--op-accent);
+      border-color: rgba(var(--op-accent-rgb), 0.35);
+      background: rgba(var(--op-accent-rgb), 0.07);
+    }
+
+    footer {
+      margin-top: 20px; padding: 0 4px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--op-muted);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .terminalCard, .livePulse, .cursor { animation: none !important; }
+    }
+
+    @media screen and (max-width: 640px) {
+      .terminalBody { padding: 22px 18px 26px; }
+    }
+  </style>
+  </head>
+  <body>
+
+  <main>
+    <div class="terminalCard">
+      <div class="terminalBar">
+        <span class="winDot"></span><span class="winDot"></span><span class="winDot"></span>
+        <span class="terminalTitle mono">kuberflow.shengjunye.me — deploy status</span>
+        <span class="liveTag"><span class="livePulse"></span>LIVE</span>
+      </div>
+
+      <div class="terminalBody">
+        <div class="cmdLine mono">
+          <span class="cmdPrompt">$</span>
+          <span class="cmd">argocd app get kuberflow --wait</span>
+          <span class="cursor" aria-hidden="true"></span>
+        </div>
+
+        <span class="eyebrow"><span class="eyebrowLine"></span>GitOps &middot; Synced</span>
+        <h1>Workflow <em>created</em>.</h1>
+        <p class="lede">
+          ArgoCD just synced <code>devsecops-helm/kuberflow</code> onto the cluster and
+          rendered this page to prove it. Below is the exact path your request took to
+          get here — a domain, an IP that survives every rebuild, and Tailscale standing
+          off to the side as the way in nobody but the operator uses.
+        </p>
+
+        <div class="pipeline">
+          <span class="stage">DNS</span><span class="pipeArrow">&#10230;</span>
+          <span class="stage">EIP</span><span class="pipeArrow">&#10230;</span>
+          <span class="stage">EC2 / K3S</span><span class="pipeArrow">&#10230;</span>
+          <span class="stage">ARGOCD</span><span class="pipeArrow">&#10230;</span>
+          <span class="stage">APPS</span>
+        </div>
+
+        <div class="sectionLabel"><span class="eyebrowLine"></span>Architecture</div>
+
+        <div class="diagram">
+          <svg viewBox="0 0 640 400" role="img" aria-labelledby="dTitle dDesc">
+            <title id="dTitle">Deployment architecture</title>
+            <desc id="dDesc">
+              Porkbun DNS resolves kuberflow.shengjunye.me to an AWS Elastic IP, which
+              points at an EC2 instance running k3s. Tailscale provides a parallel,
+              operator-only path into the same k3s API. ArgoCD watches Git and syncs
+              six Helm charts onto the cluster, including this one.
+            </desc>
+
+            <defs>
+              <marker id="arrowAws" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10z" fill="var(--node-aws)"></path>
+              </marker>
+              <marker id="arrowCompute" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10z" fill="var(--node-compute)"></path>
+              </marker>
+              <marker id="arrowAccent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10z" fill="var(--op-accent)"></path>
+              </marker>
+              <marker id="arrowTailscale" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10z" fill="var(--node-tailscale)"></path>
+              </marker>
+            </defs>
+
+            <text x="18" y="20" class="laneTag" font-size="9">PUBLIC PATH</text>
+            <text x="366" y="20" class="laneTag" font-size="9">OPERATOR PATH</text>
+
+            <path class="flowLine" stroke="var(--node-aws)" marker-end="url(#arrowAws)" d="M130 66 L130 92"></path>
+            <path class="flowLine" stroke="var(--node-compute)" marker-end="url(#arrowCompute)" d="M130 156 L130 182"></path>
+            <path class="flowLine" stroke="var(--op-accent)" marker-end="url(#arrowAccent)" d="M130 262 L130 288"></path>
+            <path class="flowLine branch" stroke="var(--node-tailscale)" marker-end="url(#arrowTailscale)" d="M220 220 L 340 220 L 340 200"></path>
+
+            <g>
+              <rect class="nodeBox dns" x="30" y="28" width="200" height="38" rx="6"></rect>
+              <rect class="nodePin" x="30" y="31" width="6" height="32" rx="1.5" fill="var(--node-dns)"></rect>
+              <text x="46" y="42" class="nodeNum" font-size="10" fill="var(--node-dns)">01</text>
+              <text x="70" y="52" class="nodeTitle" font-size="13">Porkbun DNS</text>
+            </g>
+
+            <g>
+              <rect class="nodeBox aws" x="30" y="92" width="200" height="38" rx="6"></rect>
+              <rect class="nodePin" x="30" y="95" width="6" height="32" rx="1.5" fill="var(--node-aws)"></rect>
+              <text x="46" y="106" class="nodeNum" font-size="10" fill="var(--node-aws)">02</text>
+              <text x="70" y="116" class="nodeTitle" font-size="13">AWS Elastic IP</text>
+            </g>
+
+            <g>
+              <rect class="nodeBox compute" x="30" y="182" width="200" height="56" rx="6"></rect>
+              <rect class="nodePin" x="30" y="185" width="6" height="50" rx="1.5" fill="var(--node-compute)"></rect>
+              <text x="46" y="200" class="nodeNum" font-size="10" fill="var(--node-compute)">03</text>
+              <text x="70" y="210" class="nodeTitle" font-size="13">EC2 &middot; k3s</text>
+              <text x="46" y="228" class="nodeCaption" font-size="10">single-node, VPC public subnet</text>
+            </g>
+
+            <g>
+              <rect class="nodeBox tailscale" x="340" y="164" width="230" height="56" rx="6" stroke-dasharray="3 3"></rect>
+              <text x="356" y="182" class="nodeCaption" font-size="10" fill="var(--node-tailscale)">TAILSCALE</text>
+              <text x="356" y="200" class="nodeTitle" font-size="13">WireGuard mesh</text>
+              <text x="356" y="214" class="nodeCaption" font-size="10">only path to :6443</text>
+            </g>
+
+            <g>
+              <rect class="nodeBox argocd" x="30" y="288" width="200" height="56" rx="6"></rect>
+              <rect class="nodePin" x="30" y="291" width="6" height="50" rx="1.5" fill="var(--op-accent)"></rect>
+              <text x="46" y="306" class="nodeNum" font-size="10" fill="var(--op-accent)">04</text>
+              <text x="70" y="316" class="nodeTitle" font-size="13">ArgoCD</text>
+              <text x="46" y="334" class="nodeCaption" font-size="10">selfHeal + prune, watches Git</text>
+            </g>
+
+            <text x="30" y="380" class="laneTag" font-size="9">05 &middot; HELM APPS SYNCED BY ARGOCD &darr;</text>
+          </svg>
+        </div>
+
+        <div class="techRow">
+          <span class="techPill"><span class="dot" style="background:var(--node-dns)"></span>ingress-nginx</span>
+          <span class="techPill"><span class="dot" style="background:var(--node-aws)"></span>cert-manager</span>
+          <span class="techPill"><span class="dot" style="background:var(--node-tailscale)"></span>tailscale-operator</span>
+          <span class="techPill"><span class="dot" style="background:var(--op-accent)"></span>syesite</span>
+          <span class="techPill"><span class="dot" style="background:var(--op-accent)"></span>hello-world</span>
+          <span class="techPill self"><span class="dot" style="background:var(--op-accent)"></span>kuberflow (this page)</span>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <span>served by argocd &rarr; helm &rarr; k3s &rarr; ingress-nginx</span>
+      <span>devsecops-infra &middot; devsecops-helm &middot; argocd-app-of-apps</span>
+    </footer>
+  </main>
+
+  </body>
+  </html>

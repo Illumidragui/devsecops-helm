@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kuberflow.fullname" . }}-html
+  labels:
+    {{- include "kuberflow.labels" . | nindent 4 }}
+data:
+  index.html: |
+    {{- .Values.html | nindent 4 }}

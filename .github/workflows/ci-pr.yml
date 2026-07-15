@@ -37,7 +37,7 @@ jobs:
       - uses: azure/setup-helm@v4
       - name: Lint charts
         run: |
-          for chart in ingress-nginx cert-manager-clusterissuer tailscale-operator syesite-chart hello-world kuberflow; do
+          for chart in ingress-nginx cert-manager-clusterissuer tailscale-operator syesite-chart kuberflow; do
             echo "──────── $chart ────────"
             helm dependency update "$chart" 2>/dev/null || true
             helm lint "$chart"

@@ -409,7 +409,6 @@ html: |
           <span class="techPill"><span class="dot" style="background:var(--node-aws)"></span>cert-manager</span>
           <span class="techPill"><span class="dot" style="background:var(--node-tailscale)"></span>tailscale-operator</span>
           <span class="techPill"><span class="dot" style="background:var(--op-accent)"></span>syesite</span>
-          <span class="techPill"><span class="dot" style="background:var(--op-accent)"></span>hello-world</span>
           <span class="techPill self"><span class="dot" style="background:var(--op-accent)"></span>kuberflow (this page)</span>
         </div>
       </div>

@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "hello-world.fullname" . }}-html
+  name: {{ include "kuberflow.fullname" . }}-html
   labels:
-    {{- include "hello-world.labels" . | nindent 4 }}
+    {{- include "kuberflow.labels" . | nindent 4 }}
 data:
   index.html: |
     {{- .Values.html | nindent 4 }}

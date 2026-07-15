@@ -1,22 +1,22 @@
-{{- define "hello-world.name" -}}
+{{- define "kuberflow.name" -}}
 {{- .Chart.Name }}
 {{- end }}
 
-{{- define "hello-world.fullname" -}}
+{{- define "kuberflow.fullname" -}}
 {{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- define "hello-world.chart" -}}
+{{- define "kuberflow.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{- define "hello-world.labels" -}}
-helm.sh/chart: {{ include "hello-world.chart" . }}
-{{ include "hello-world.selectorLabels" . }}
+{{- define "kuberflow.labels" -}}
+helm.sh/chart: {{ include "kuberflow.chart" . }}
+{{ include "kuberflow.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "hello-world.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "hello-world.name" . }}
+{{- define "kuberflow.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kuberflow.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
